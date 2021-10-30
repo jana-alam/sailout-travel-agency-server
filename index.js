@@ -3,7 +3,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 app.get("/", (req, res) => {
-  res.send("Server is running from localhost 5000");
+  res.send("Server is running from localhost 5000 & heroku");
 });
 
 app.listen(port, () => {
