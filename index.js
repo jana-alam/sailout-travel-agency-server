@@ -7,9 +7,14 @@ const cors = require("cors");
 // middleware
 app.use(cors());
 app.use(express.json());
+// calling environment variable
+require("dotenv").config();
+// Object Id
 
-const uri =
-  "mongodb+srv://mydbuser1:nnsYpp9DI2SJ91q5@janaalam.ewacz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const ObjectId = require("mongodb").ObjectId;
+
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@janaalam.ewacz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+console.log(uri);
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -19,6 +24,7 @@ async function run() {
   try {
     await client.connect();
 
+    console.log("Connected with database");
     // database & collections
     const database = client.db("sailout");
     const tours = database.collection("tours");
@@ -29,6 +35,13 @@ async function run() {
       const result = await cursor.toArray();
       console.log(result);
       res.json(result);
+    });
+    // Get Api by _id
+    app.get("/booking/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const tour = await tours.findOne(query);
+      res.json(tour);
     });
 
     // Post Api
