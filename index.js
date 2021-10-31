@@ -27,28 +27,55 @@ async function run() {
     console.log("Connected with database");
     // database & collections
     const database = client.db("sailout");
-    const tours = database.collection("tours");
+    const tourCollection = database.collection("tours");
+    const bookingCollection = database.collection("bookings");
 
     // Get Api
     app.get("/tours", async (req, res) => {
-      const cursor = tours.find({});
+      const cursor = tourCollection.find({});
       const result = await cursor.toArray();
       console.log(result);
       res.json(result);
     });
+
     // Get Api by _id
-    app.get("/booking/:id", async (req, res) => {
+    app.get("/tour/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
-      const tour = await tours.findOne(query);
+      const tour = await tourCollection.findOne(query);
       res.json(tour);
+    });
+    // Get Api to booking by user
+    app.get("/bookings/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const cursor = bookingCollection.find(query);
+      const result = await cursor.toArray();
+      console.log(result);
+      res.json(result);
     });
 
     // Post Api
     app.post("/tours", async (req, res) => {
       const newTour = req.body;
-      console.log(newTour);
-      const result = await tours.insertOne(newTour);
+      const result = await tourCollection.insertOne(newTour);
+      res.json(result);
+    });
+    // Post Api for orders
+
+    app.post("/booking", async (req, res) => {
+      const booking = req.body;
+      const result = await bookingCollection.insertOne(booking);
+      console.log(result);
+      res.json(result);
+    });
+
+    // delete api for bookings
+
+    app.delete("/bookings/user/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await bookingCollection.deleteOne(query);
       console.log(result);
       res.json(result);
     });
