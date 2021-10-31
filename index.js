@@ -34,7 +34,6 @@ async function run() {
     app.get("/tours", async (req, res) => {
       const cursor = tourCollection.find({});
       const result = await cursor.toArray();
-      console.log(result);
       res.json(result);
     });
 
@@ -54,6 +53,13 @@ async function run() {
       console.log(result);
       res.json(result);
     });
+    // Get Api for all bookings
+
+    app.get("/bookings/all", async (req, res) => {
+      const cursor = bookingCollection.find({});
+      const bookings = await cursor.toArray();
+      res.json(bookings);
+    });
 
     // Post Api
     app.post("/tours", async (req, res) => {
@@ -70,9 +76,28 @@ async function run() {
       res.json(result);
     });
 
+    // Update API for booking update
+    app.put("/bookings/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updatedDoc = {
+        $set: {
+          status: "confirmed",
+        },
+      };
+      const result = await bookingCollection.updateOne(
+        filter,
+        updatedDoc,
+        options
+      );
+      console.log(result);
+      res.json(result);
+    });
+
     // delete api for bookings
 
-    app.delete("/bookings/user/:id", async (req, res) => {
+    app.delete("/bookings/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await bookingCollection.deleteOne(query);
