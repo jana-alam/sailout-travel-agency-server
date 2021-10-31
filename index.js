@@ -83,7 +83,7 @@ async function run() {
       const options = { upsert: true };
       const updatedDoc = {
         $set: {
-          status: "confirmed",
+          status: "approved",
         },
       };
       const result = await bookingCollection.updateOne(
